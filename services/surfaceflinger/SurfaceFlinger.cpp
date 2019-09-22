@@ -302,6 +302,28 @@ SurfaceFlinger::SurfaceFlinger() : SurfaceFlinger(SkipInitialization) {
             V1_1::DisplayOrientation::ORIENTATION_0);
 
     switch (primaryDisplayOrientation) {
+        case V1_1::DisplayOrientation::ORIENTATION_0:
+	  {
+	    int sfRotation = property_get_int32("ro.sf.hwrotation", -1);
+	    switch(sfRotation) {
+              case 0:
+	        SurfaceFlinger::primaryDisplayOrientation = DisplayState::eOrientationDefault;
+                break;
+	      case 90:
+	        SurfaceFlinger::primaryDisplayOrientation = DisplayState::eOrientation90;
+	        break;
+	      case 180:
+	        SurfaceFlinger::primaryDisplayOrientation = DisplayState::eOrientation180;
+	        break;
+	      case 270:
+	        SurfaceFlinger::primaryDisplayOrientation = DisplayState::eOrientation270;
+	        break;
+             default:
+                SurfaceFlinger::primaryDisplayOrientation = DisplayState::eOrientationDefault;
+                break;
+            }
+          }
+	  break;
         case V1_1::DisplayOrientation::ORIENTATION_90:
             SurfaceFlinger::primaryDisplayOrientation = DisplayState::eOrientation90;
             break;
@@ -314,24 +336,6 @@ SurfaceFlinger::SurfaceFlinger() : SurfaceFlinger(SkipInitialization) {
         default:
             SurfaceFlinger::primaryDisplayOrientation = DisplayState::eOrientationDefault;
             break;
-    }
-
-    if(SurfaceFlinger::primaryDisplayOrientation == V1_1::DisplayOrientation::ORIENTATION_0) {
-        int sfRotation = property_get_int32("ro.sf.hwrotation", -1);
-        switch(sfRotation) {
-            case 0:
-                SurfaceFlinger::primaryDisplayOrientation = DisplayState::eOrientationDefault;
-                break;
-            case 90:
-                SurfaceFlinger::primaryDisplayOrientation = DisplayState::eOrientation90;
-                break;
-            case 180:
-                SurfaceFlinger::primaryDisplayOrientation = DisplayState::eOrientation180;
-                break;
-            case 270:
-                SurfaceFlinger::primaryDisplayOrientation = DisplayState::eOrientation270;
-                break;
-        }
     }
     ALOGV("Primary Display Orientation is set to %2d.", SurfaceFlinger::primaryDisplayOrientation);
 
